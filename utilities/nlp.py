@@ -61,13 +61,19 @@ class tfidf(dict):
 
         # Normalizing idf
         for word in idf.keys():
-            idf[word] = log(N / float(idf[word]))
+            idf[word] = log(1 + (N / float(idf[word])))
         # max_tf = float(max(tf.values()))
         for word in tf.keys():
-            tf[word] = log(tf[word])
+            tf[word] = 1 + log(tf[word])
 
         for word in tf.keys():
             self[word] = tf[word] * idf[word]
+
+        minimum = min(self.values())
+        for word in self.keys():
+            self[word] -= minimum
+            if self[word] < 0.5:
+                del self[word]
 
     def save(self):
         with open('tfidf.pkl', 'wb') as f:
